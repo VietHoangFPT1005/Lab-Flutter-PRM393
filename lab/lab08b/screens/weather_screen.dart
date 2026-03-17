@@ -17,6 +17,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   late final WeatherService _weatherService;
   City _selectedCity = popularCities.first;
   Future<CurrentWeather>? _weatherFuture;
+  bool _isDemo = false;
 
   @override
   void initState() {
@@ -27,12 +28,28 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   void _fetchWeather() {
     setState(() {
-      _weatherFuture = _weatherService.fetchWeather(
-        latitude: _selectedCity.latitude,
-        longitude: _selectedCity.longitude,
-      );
+      _isDemo = false;
+      _weatherFuture = _weatherService
+          .fetchWeather(
+            latitude: _selectedCity.latitude,
+            longitude: _selectedCity.longitude,
+          )
+          .then((w) {
+        // If temperature is one of our known demo values → demo mode
+        if (mounted) {
+          setState(() => _isDemo = _knownDemoTemps
+              .contains(w.temperature));
+        }
+        return w;
+      });
     });
   }
+
+  // Known demo temperatures used in WeatherService._demoWeather()
+  // Note: cannot use `const` because double overrides == and hashCode
+  static final _knownDemoTemps = <double>{
+    32.9, 24.5, 12.0, 10.5, 8.0, 30.0, 22.0, 20.0,
+  };
 
   @override
   void dispose() {
@@ -61,9 +78,37 @@ class _WeatherScreenState extends State<WeatherScreen> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
+              // ── Demo banner ───────────────────────────────────────────
+              if (_isDemo)
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.orange[900]!.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.wifi_off,
+                          size: 14, color: Colors.orange),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'Demo data – no internet connection',
+                          style: TextStyle(
+                              color: Colors.orange, fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
               // ── City Selector ─────────────────────────────────────────
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: Colors.blueGrey[700],
                   borderRadius: BorderRadius.circular(12),
@@ -73,8 +118,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     isExpanded: true,
                     dropdownColor: Colors.blueGrey[700],
                     value: _selectedCity,
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
-                    icon: const Icon(Icons.location_on, color: Colors.lightBlueAccent),
+                    style: const TextStyle(
+                        color: Colors.white, fontSize: 16),
+                    icon: const Icon(Icons.location_on,
+                        color: Colors.lightBlueAccent),
                     items: popularCities
                         .map((city) => DropdownMenuItem(
                               value: city,
@@ -98,7 +145,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   future: _weatherFuture,
                   builder: (context, snapshot) {
                     // Loading state
-                    if (snapshot.connectionState == ConnectionState.waiting) {
+                    if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
                       return const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -107,13 +155,14 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 color: Colors.lightBlueAccent),
                             SizedBox(height: 16),
                             Text('Fetching weather...',
-                                style: TextStyle(color: Colors.white70)),
+                                style: TextStyle(
+                                    color: Colors.white70)),
                           ],
                         ),
                       );
                     }
 
-                    // Error state
+                    // Error state (only if service itself throws)
                     if (snapshot.hasError) {
                       return Center(
                         child: Column(
@@ -132,7 +181,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             const SizedBox(height: 8),
                             Text(
                               snapshot.error.toString(),
-                              style: const TextStyle(color: Colors.grey),
+                              style: const TextStyle(
+                                  color: Colors.grey),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 20),
@@ -184,7 +234,10 @@ class _WeatherContent extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Colors.blueGrey[700]!, Colors.blueGrey[600]!],
+                colors: [
+                  Colors.blueGrey[700]!,
+                  Colors.blueGrey[600]!
+                ],
               ),
               borderRadius: BorderRadius.circular(20),
             ),
@@ -198,8 +251,7 @@ class _WeatherContent extends StatelessWidget {
                 Text(
                   city.name,
                   style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16),
+                      color: Colors.white70, fontSize: 16),
                 ),
                 Text(
                   '${weather.temperature.toStringAsFixed(1)}°C',
@@ -226,7 +278,8 @@ class _WeatherContent extends StatelessWidget {
               _StatCard(
                 icon: Icons.air,
                 label: 'Wind',
-                value: '${weather.windspeed.toStringAsFixed(1)} km/h',
+                value:
+                    '${weather.windspeed.toStringAsFixed(1)} km/h',
               ),
               const SizedBox(width: 12),
               _StatCard(
@@ -238,7 +291,7 @@ class _WeatherContent extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // ── Recommendations (Purpose-driven feature) ─────────────────
+          // ── Recommendations ──────────────────────────────────────────
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
@@ -306,7 +359,8 @@ class _StatCard extends StatelessWidget {
                     fontSize: 16,
                     fontWeight: FontWeight.bold)),
             Text(label,
-                style: const TextStyle(color: Colors.white60, fontSize: 12)),
+                style: const TextStyle(
+                    color: Colors.white60, fontSize: 12)),
           ],
         ),
       ),
@@ -323,7 +377,8 @@ class _RecommendationRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding:
+          const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.blueGrey[800],
         borderRadius: BorderRadius.circular(10),

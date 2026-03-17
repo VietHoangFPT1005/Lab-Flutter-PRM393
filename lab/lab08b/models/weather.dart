@@ -1,5 +1,10 @@
 // Lab 8B – Weather Model
 // Maps response from Open-Meteo API (free, no API key required)
+//
+// ✅ Updated JSON keys for Open-Meteo API 2024+:
+//   relativehumidity_2m → relative_humidity_2m
+//   weathercode         → weather_code
+//   windspeed_10m       → wind_speed_10m
 
 class CurrentWeather {
   final double temperature;
@@ -16,11 +21,31 @@ class CurrentWeather {
 
   factory CurrentWeather.fromJson(Map<String, dynamic> json) {
     final current = json['current'] as Map<String, dynamic>;
+
+    // Support both new (2024+) and old API field names as fallback
+    final double temp =
+        (current['temperature_2m'] as num?)?.toDouble() ?? 0.0;
+
+    final double wind =
+        (current['wind_speed_10m'] as num?)?.toDouble() ??
+        (current['windspeed_10m'] as num?)?.toDouble() ??
+        0.0;
+
+    final int hum =
+        (current['relative_humidity_2m'] as num?)?.toInt() ??
+        (current['relativehumidity_2m'] as num?)?.toInt() ??
+        0;
+
+    final int code =
+        (current['weather_code'] as num?)?.toInt() ??
+        (current['weathercode'] as num?)?.toInt() ??
+        0;
+
     return CurrentWeather(
-      temperature: (current['temperature_2m'] as num).toDouble(),
-      windspeed: (current['windspeed_10m'] as num).toDouble(),
-      humidity: (current['relativehumidity_2m'] as num).toInt(),
-      weatherCode: (current['weathercode'] as num).toInt(),
+      temperature: temp,
+      windspeed: wind,
+      humidity: hum,
+      weatherCode: code,
     );
   }
 

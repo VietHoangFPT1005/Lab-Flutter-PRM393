@@ -34,6 +34,13 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Only package x86_64 for the emulator – shrinks debug APK from ~45MB → ~15MB
+            // so it fits on the emulator's limited internal storage.
+            ndk {
+                abiFilters += setOf("x86_64")
+            }
+        }
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
