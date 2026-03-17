@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(move:*)",
+      "Bash(flutter analyze:*)",
+      "Read(//c/Users/ADMIN/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/a10b36e3-d9fe-41d6-8722-97360d28d245/f05006c4-309c-4e77-a154-edb047e18a41/skills/docx/**)",
+      "Bash(python scripts/office/unpack.py \"C:\\\\Users\\\\ADMIN\\\\Desktop\\\\FPT_Study\\\\Session VIII\\\\PRM393\\\\PRM393_Slide_Lab\\\\Lab\\\\Lab 7_Building a Signup Form with Validation & Good UX.docx\" unpacked_lab7/)",
+      "Bash(pandoc \"C:\\\\Users\\\\ADMIN\\\\Desktop\\\\FPT_Study\\\\Session VIII\\\\PRM393\\\\PRM393_Slide_Lab\\\\Lab\\\\Lab 7_Building a Signup Form with Validation & Good UX.docx\" -o /dev/stdout)",
+      "Bash(pandoc \"C:\\\\Users\\\\ADMIN\\\\Desktop\\\\FPT_Study\\\\Session VIII\\\\PRM393\\\\PRM393_Slide_Lab\\\\Lab\\\\Lab 7_Building a Signup Form with Validation & Good UX.docx\" -t plain)",
+      "Bash(where pandoc:*)",
+      "Bash(where python3:*)",
+      "Bash(where py:*)",
+      "Bash(python3 scripts/office/unpack.py \"C:\\\\Users\\\\ADMIN\\\\Desktop\\\\FPT_Study\\\\Session VIII\\\\PRM393\\\\PRM393_Slide_Lab\\\\Lab\\\\Lab 7_Building a Signup Form with Validation & Good UX.docx\" /tmp/unpacked_lab7/)",
+      "Bash(python3.exe -c \"import zipfile; z = zipfile.ZipFile\\(r''C:\\\\Users\\\\ADMIN\\\\Desktop\\\\FPT_Study\\\\Session VIII\\\\PRM393\\\\PRM393_Slide_Lab\\\\Lab\\\\Lab 7_Building a Signup Form with Validation & Good UX.docx''\\); content = z.read\\(''word/document.xml''\\).decode\\(''utf-8''\\); print\\(content[:5000]\\)\")",
+      "Read(//c/Users/ADMIN/AppData/Local/Microsoft/WindowsApps/**)",
+      "Bash(\"C:\\\\Users\\\\ADMIN\\\\AppData\\\\Local\\\\Microsoft\\\\WindowsApps\\\\python3.exe\" --version)",
+      "Read(//c/Users/ADMIN/AppData/Local/Programs/**)",
+      "Read(//c/Program Files/**)",
+      "Bash(node -e \":*)"
+    ]
+  }
+}
